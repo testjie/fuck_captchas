@@ -2,7 +2,7 @@
 __author__ = 'snake'
 
 from app import create_app
-from app.api import rc, scmcc
+from app.api import scmcc
 
 app = create_app("ProductionConfig")
 
