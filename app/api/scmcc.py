@@ -22,6 +22,6 @@ def fuck_wap_captcha():
     res = {
         "code": 200,
         "msg": "success!",
-        "data":captcha_text
+        "data": captcha_text
     }
     return jsonify(res)
