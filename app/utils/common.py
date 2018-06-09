@@ -3,6 +3,7 @@ __author__ = 'snake'
 
 import os
 import json
+from config import UPLOADS_PATH
 from flask import request
 from datetime import datetime
 from app.utils.db import query, excute
@@ -112,17 +113,19 @@ def _get_json_data(data, code, msg, url):
         return []
 
 
-def _upload_files(file, file_name):
+# todo 文件保存失败
+def upload_files(file):
     """
     上传图片公共方法
     :param file: 上传的file文件
     :return: True:成功;False失败
     """
     try:
-        upload_path = os.path.join("static/captchas/", file_name)  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
+        upload_path = os.path.join(UPLOADS_PATH, file.filename)  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
         file.save(upload_path)
+        print("123")
         return True
-    except:
+    except Exception as e:
         return False
 
 

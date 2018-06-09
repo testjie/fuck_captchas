@@ -2,6 +2,7 @@
 __author__ = 'snake'
 
 import os
+import sys
 
 
 class BaseConfig:
@@ -35,3 +36,6 @@ db_config = {
     'charset': 'utf8mb4'
 }
 
+
+UPLOADS_PATH = sys.path[1] + "/app/uploads/"
+CNN_WAP_PATH = sys.path[1] + "/app/cnn/wap/"

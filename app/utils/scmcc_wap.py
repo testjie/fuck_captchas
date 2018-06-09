@@ -3,6 +3,8 @@ __author__ = 'snake'
 import numpy as np
 import tensorflow as tf
 from PIL import Image
+from config import CNN_WAP_PATH
+
 
 def _convert2gray(img):
     if len(img.shape)>2:
@@ -13,15 +15,15 @@ def _convert2gray(img):
         return img
 
 
-def cnn(b_alpha=0.1, IMAGE_HEIGHT=80, IMAGE_WIDTH=200, MAX_CAPTCHA=4, CHAR_SET_LEN=10):
+
+
+
+def cnn(b_alpha=0.1,X=None, keep_prob=None, IMAGE_HEIGHT=80, IMAGE_WIDTH=200, MAX_CAPTCHA=4, CHAR_SET_LEN=10):
     """
     3层卷积神经网络
     :param b_alpha:
     :return:
     """
-    X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH])
-    keep_prob = tf.placeholder(tf.float32)  # dropout
-
     x = tf.reshape(X, shape=[-1, IMAGE_HEIGHT, IMAGE_WIDTH, 1])
 
     wc1 = tf.get_variable(name='wc1', shape=[3, 3, 1, 32],
@@ -60,24 +62,36 @@ def cnn(b_alpha=0.1, IMAGE_HEIGHT=80, IMAGE_WIDTH=200, MAX_CAPTCHA=4, CHAR_SET_L
     return out
 
 
-def _fuck_captcha(captcha_image, max_captcha=4, char_set_len=4, image_height=80, image_width=200):
+def fuck_captcha(image_path=None, max_captcha=4, char_set_len=10, image_height=80, image_width=200):
     """
     破解验证码方法
-    :param captcha_image:
+    :param image_path:
+    :param max_captcha:
+    :param char_set_len:
+    :param image_height:
+    :param image_width:
     :return:
     """
-    output = cnn()
-    saver = tf.train.Saver()
-    predict = tf.argmax(tf.reshape(output, [-1, max_captcha, char_set_len]), 2)
+    if image_path is None or image_path == "":
+        return ""
+
+    # 初始化占位符
     X = tf.placeholder(tf.float32, [None, image_height * image_width])
     keep_prob = tf.placeholder(tf.float32)
 
+    # 建立cnn模型
+    output = cnn(X=X, keep_prob=keep_prob)
+    saver = tf.train.Saver()
+    predict = tf.argmax(tf.reshape(output, [-1, max_captcha, char_set_len]), 2)
+
     with tf.Session() as sess:
-        saver.restore(sess, tf.train.latest_checkpoint("../cnn/wap"))
+        captcha_image = np.array(Image.open(image_path))
+        saver.restore(sess, tf.train.latest_checkpoint(CNN_WAP_PATH))
         image = _convert2gray(captcha_image)
         image = image.flatten() / 255
 
-        text_list = sess.run(predict, feed_dict={X: [captcha_image], keep_prob: 1})
+        # 解析预测值
+        text_list = sess.run(predict, feed_dict={X: [image], keep_prob: 1})
         text = text_list[0].tolist()
         text = "".join(list(map(str, text)))
 
@@ -86,5 +100,4 @@ def _fuck_captcha(captcha_image, max_captcha=4, char_set_len=4, image_height=80,
 
 if __name__ == "__main__":
     image_path = "../uploads/4941.jpg"
-    image = np.array(Image.open(image_path))
-    print(_fuck_captcha(captcha_image=image))
+    print(fuck_captcha(image_path=image_path))

@@ -1,21 +1,27 @@
 # -*- coding:utf-8 -*-
 __author__ = 'snake'
-import tensorflow as tf
 
 from app import bp
+from flask import jsonify
 from flask import request
-from app.utils.scmcc_wap import cnn
-from app.utils.common import _upload_files
+from config import UPLOADS_PATH
+from app.utils.common import upload_files
+from app.utils.scmcc_wap import fuck_captcha
 
 
 @bp.route("/scmccWapCaptchaCrack", methods=["post"])
 def fuck_wap_captcha():
     file = request.files['file']
     file_name = file.filename
-    if _upload_files(file, file_name):
-        pass
 
-    return "123"
+    if upload_files(file) is False:
+        return ""
 
+    captcha_text = fuck_captcha(image_path=UPLOADS_PATH + file_name)
 
-
+    res = {
+        "code": 200,
+        "msg": "success!",
+        "data":captcha_text
+    }
+    return jsonify(res)
