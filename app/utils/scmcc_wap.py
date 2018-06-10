@@ -97,7 +97,6 @@ def fuck_captcha(image_path=None, max_captcha=4, char_set_len=10, image_height=8
         text = text_list[0].tolist()
         text = "".join(list(map(str, text)))
 
-    # 重置默认图，liunx下兼容性问题
     tf.reset_default_graph()
     return text
 

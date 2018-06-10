@@ -38,4 +38,4 @@ db_config = {
 
 
 UPLOADS_PATH = sys.path[1] + "/app/uploads/"
-CNN_WAP_PATH = sys.path[1] + "/app/cnn/wap/"
+CNN_WAP_PATH = "C:/Users/SNake/PycharmProjects/fuck_captchas/app/cnn/wap/"
