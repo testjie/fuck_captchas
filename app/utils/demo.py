@@ -14,15 +14,18 @@ def _fuck_captache(file_path):
         file = open(file_path, 'rb').read()
         filename = file_path.split("/")[-1]
         files = {'file': (filename, file)}
-        r = requests.post('http://localhost:87/scmccWapCaptchaCrack', files=files)
+        #r = requests.post('http://localhost:87/scmccWapCaptchaCrack', files=files)
+        r = requests.post('http://captcha.testjie.top/scmccWapCaptchaCrack', files=files)
         if r.status_code == 200:
-            return r.text
+            return eval(r.text).get("data")
 
         return ""
     except Exception as e:
+
         return ""
 
 
+# 接口为空的问题
 if __name__ == "__main__":
-    path = "./4942.jpg"
+    path = "C:/Users/SNake/Desktop/verifies/train/2.jpg"
     print(_fuck_captache(path))

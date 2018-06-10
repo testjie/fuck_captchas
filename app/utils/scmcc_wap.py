@@ -4,6 +4,7 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 from config import CNN_WAP_PATH
+from flask import session
 
 
 def _convert2gray(img):
@@ -13,9 +14,6 @@ def _convert2gray(img):
         return gray
     else:
         return img
-
-
-
 
 
 def cnn(b_alpha=0.1,X=None, keep_prob=None, IMAGE_HEIGHT=80, IMAGE_WIDTH=200, MAX_CAPTCHA=4, CHAR_SET_LEN=10):
@@ -33,12 +31,14 @@ def cnn(b_alpha=0.1,X=None, keep_prob=None, IMAGE_HEIGHT=80, IMAGE_WIDTH=200, MA
     conv1 = tf.nn.max_pool(conv1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
     conv1 = tf.nn.dropout(conv1, keep_prob)
 
+
     wc2 = tf.get_variable(name='wc2', shape=[3, 3, 32, 64],
                           dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
     bc2 = tf.Variable(b_alpha * tf.random_normal([64]))
     conv2 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv1, wc2, strides=[1, 1, 1, 1], padding='SAME'), bc2))
     conv2 = tf.nn.max_pool(conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
     conv2 = tf.nn.dropout(conv2, keep_prob)
+
 
     wc3 = tf.get_variable(name='wc3', shape=[3, 3, 64, 128],
                           dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
@@ -47,12 +47,14 @@ def cnn(b_alpha=0.1,X=None, keep_prob=None, IMAGE_HEIGHT=80, IMAGE_WIDTH=200, MA
     conv3 = tf.nn.max_pool(conv3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
     conv3 = tf.nn.dropout(conv3, keep_prob)
 
+
     wd1 = tf.get_variable(name='wd1', shape=[10 * 25 * 128, 1024],
                           dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
     bd1 = tf.Variable(b_alpha * tf.random_normal([1024]))
     dense = tf.reshape(conv3, [-1, 10 * 25 * 128])
     dense = tf.nn.relu(tf.add(tf.matmul(dense, wd1), bd1))
     dense = tf.nn.dropout(dense, keep_prob)
+
 
     wout = tf.get_variable('name', shape=[1024, MAX_CAPTCHA * CHAR_SET_LEN],
                            dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer())
@@ -95,6 +97,7 @@ def fuck_captcha(image_path=None, max_captcha=4, char_set_len=10, image_height=8
         text = text_list[0].tolist()
         text = "".join(list(map(str, text)))
 
+    tf.reset_default_graph()
     return text
 
 

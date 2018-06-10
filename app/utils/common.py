@@ -123,7 +123,6 @@ def upload_files(file):
     try:
         upload_path = os.path.join(UPLOADS_PATH, file.filename)  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
         file.save(upload_path)
-        print("123")
         return True
     except Exception as e:
         return False

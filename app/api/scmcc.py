@@ -14,8 +14,13 @@ def fuck_wap_captcha():
     file = request.files['file']
     file_name = file.filename
 
+    res = {
+        "code": 500,
+        "msg": "error!",
+        "data": ""
+    }
     if upload_files(file) is False:
-        return ""
+        return res
 
     captcha_text = fuck_captcha(image_path=UPLOADS_PATH + file_name)
 
